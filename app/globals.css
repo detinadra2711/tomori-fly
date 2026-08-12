@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+/*
+  Design system — dark slate "floating cards" (adapted from smart-home mockup).
+  Palette from mockup description in IMPLEMENTATION_PLAN.md.
+*/
+:root {
+  --bg-base: #2a2d35; /* near-black slate — app background */
+  --panel: #3d4a5c; /* main big panel */
+  --panel-detail: #4a5e78; /* side / detail panel */
+  --card: #4a5568; /* device/content card */
+  --card-hover: #55617a; /* subtle hover lift */
+
+  --accent-green: #22c55e; /* active / APPROVED / BOOKED */
+  --accent-orange: #f97316; /* warning / PENDING */
+  --accent-blue: #3b82f6; /* info / DRAFT */
+  --accent-red: #ef4444; /* REJECTED */
+
+  --text-primary: #ffffff;
+  --text-muted: #94a3b8; /* slate muted — secondary text */
+}
+
+@theme inline {
+  --color-base: var(--bg-base);
+  --color-panel: var(--panel);
+  --color-panel-detail: var(--panel-detail);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+
+  --color-accent-green: var(--accent-green);
+  --color-accent-orange: var(--accent-orange);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-red: var(--accent-red);
+
+  --color-primary: var(--text-primary);
+  --color-muted: var(--text-muted);
+
+  --font-sans: var(--font-inter);
+
+  --radius-panel: 24px;
+  --radius-card: 16px;
+}
+
+* {
+  border-color: transparent;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Depth via soft shadows, never hard borders. */
+.shadow-panel {
+  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.55);
+}
+.shadow-card {
+  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.45);
+}
+.shadow-float {
+  box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.7);
+}
+
+/* Thin scrollbar that blends into the slate theme. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

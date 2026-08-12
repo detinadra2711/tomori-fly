@@ -1,0 +1,84 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/auth";
+import { requiresTravelCodes, showsTravelCodes } from "@/lib/profile/fields";
+import { validatePassword } from "@/lib/admin/validation";
+
+export type ProfileResult =
+  | { ok: true }
+  | { ok: false; error: string; field?: string };
+
+export interface OwnProfileInput {
+  name: string;
+  phone: string;
+  gffCode?: string;
+  bffCode?: string;
+}
+
+/**
+ * Update profil milik sendiri. Field yang boleh diubah dibatasi (tidak termasuk
+ * role/email/is_active). GFF/BFF hanya untuk role yang relevan; wajib bagi User.
+ */
+export async function updateOwnProfile(
+  input: OwnProfileInput
+): Promise<ProfileResult> {
+  const user = await getCurrentUser();
+  if (!user) return { ok: false, error: "Belum login." };
+
+  if (!input.name.trim())
+    return { ok: false, error: "Nama lengkap wajib diisi.", field: "name" };
+  if (!input.phone.trim())
+    return { ok: false, error: "Nomor HP wajib diisi.", field: "phone" };
+  if (!/^[0-9+()\-\s]{6,20}$/.test(input.phone.trim()))
+    return { ok: false, error: "Format nomor HP tidak valid.", field: "phone" };
+
+  const usesCodes = showsTravelCodes(user.role);
+  const codesRequired = requiresTravelCodes(user.role);
+
+  if (codesRequired) {
+    if (!input.gffCode?.trim())
+      return { ok: false, error: "Kode GFF wajib diisi.", field: "gffCode" };
+    if (!input.bffCode?.trim())
+      return { ok: false, error: "Kode BFF wajib diisi.", field: "bffCode" };
+  }
+
+  const patch: Record<string, string | null> = {
+    name: input.name.trim(),
+    phone: input.phone.trim(),
+  };
+  if (usesCodes) {
+    patch.gff_code = input.gffCode?.trim() || null;
+    patch.bff_code = input.bffCode?.trim() || null;
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update(patch)
+    .eq("id", user.id);
+  if (error) return { ok: false, error: "Gagal menyimpan profil." };
+
+  revalidatePath("/profile");
+  return { ok: true };
+}
+
+/**
+ * Ganti password akun sendiri (Supabase Auth).
+ */
+export async function changeOwnPassword(
+  newPassword: string
+): Promise<ProfileResult> {
+  const user = await getCurrentUser();
+  if (!user) return { ok: false, error: "Belum login." };
+
+  const pwErr = validatePassword(newPassword);
+  if (pwErr) return { ok: false, error: pwErr.message, field: "password" };
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) return { ok: false, error: "Gagal mengubah password." };
+
+  return { ok: true };
+}
