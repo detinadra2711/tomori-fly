@@ -51,7 +51,7 @@ export default async function TripPrintPage({
           <Item label="Nama" value={trip.userName} />
           <Item label="No. HP" value={trip.userPhone ?? "-"} />
           <Item label="Kode GFF" value={trip.userGffCode ?? "-"} />
-          <Item label="Kode BFF" value={trip.userBffCode ?? "-"} />
+          <Item label="Kode Cabin Crew" value={trip.userBffCode ?? "-"} />
         </Grid>
       </Section>
 

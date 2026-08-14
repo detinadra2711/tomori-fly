@@ -44,7 +44,7 @@ export default async function AgentBookingDetailPage({
           <Contact label="Pemohon" value={trip.userName} />
           <Contact label="No. HP" value={trip.userPhone} />
           <Contact label="Kode GFF" value={trip.userGffCode} mono />
-          <Contact label="Kode BFF" value={trip.userBffCode} mono />
+          <Contact label="Kode Cabin Crew" value={trip.userBffCode} mono />
         </div>
 
         {trip.rejectionNote ? (

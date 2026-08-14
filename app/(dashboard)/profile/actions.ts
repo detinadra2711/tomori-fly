@@ -19,7 +19,7 @@ export interface OwnProfileInput {
 
 /**
  * Update profil milik sendiri. Field yang boleh diubah dibatasi (tidak termasuk
- * role/email/is_active). GFF/BFF hanya untuk role yang relevan; wajib bagi User.
+ * role/email/is_active). GFF/Cabin Crew hanya untuk role yang relevan; wajib bagi User.
  */
 export async function updateOwnProfile(
   input: OwnProfileInput
@@ -41,7 +41,7 @@ export async function updateOwnProfile(
     if (!input.gffCode?.trim())
       return { ok: false, error: "Kode GFF wajib diisi.", field: "gffCode" };
     if (!input.bffCode?.trim())
-      return { ok: false, error: "Kode BFF wajib diisi.", field: "bffCode" };
+      return { ok: false, error: "Kode Cabin Crew wajib diisi.", field: "bffCode" };
   }
 
   const patch: Record<string, string | null> = {

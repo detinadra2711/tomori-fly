@@ -141,10 +141,10 @@ export function ProfileForm({
                   <Input value={gff} onChange={(e) => setGff(e.target.value)} placeholder="Kode GFF" />
                 </Field>
                 <Field
-                  label={codesRequired ? "Kode BFF" : "Kode BFF (opsional)"}
+                  label={codesRequired ? "Kode Cabin Crew" : "Kode Cabin Crew (opsional)"}
                   invalid={profileField === "bffCode"}
                 >
-                  <Input value={bff} onChange={(e) => setBff(e.target.value)} placeholder="Kode BFF" />
+                  <Input value={bff} onChange={(e) => setBff(e.target.value)} placeholder="Kode Cabin Crew" />
                 </Field>
               </>
             ) : null}
@@ -303,7 +303,7 @@ export function ProfileForm({
           <p className="text-sm font-medium">Catatan</p>
           <p className="mt-2 text-xs leading-relaxed text-muted">
             {codesRequired
-              ? "Kode GFF & BFF wajib dilengkapi agar pengajuan perjalanan Anda dapat diproses."
+              ? "Kode GFF & Cabin Crew wajib dilengkapi agar pengajuan perjalanan Anda dapat diproses."
               : "Email dan peran hanya dapat diubah oleh admin."}
           </p>
         </div>

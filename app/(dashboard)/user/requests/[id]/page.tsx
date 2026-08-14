@@ -54,7 +54,7 @@ export default function RequestDetailPage() {
           <Contact label="Pemohon" value={trip.userName} />
           <Contact label="No. HP" value={trip.userPhone} />
           <Contact label="Kode GFF" value={trip.userGffCode} mono />
-          <Contact label="Kode BFF" value={trip.userBffCode} mono />
+          <Contact label="Kode Cabin Crew" value={trip.userBffCode} mono />
         </div>
 
         {trip.rejectionNote ? <div className="mt-6 rounded-2xl bg-accent-red/12 p-4 text-sm text-accent-red"><span className="font-medium">Catatan pengembalian:</span> {trip.rejectionNote}</div> : null}

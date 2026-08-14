@@ -194,7 +194,7 @@ Run these files in Supabase Dashboard → SQL Editor in exact order:
 | `0004_fix_rls_helpers.sql` | Grants required by RLS helper functions. |
 | `0005_officer_acknowledge.sql` | Rename `APPROVED` to `ACKNOWLEDGED`; Officer rules. |
 | `0006_travel_agent.sql` | Agent transitions, booking attribution, resubmission. |
-| `0007_profile_fields.sql` | Phone, GFF, BFF fields. |
+| `0007_profile_fields.sql` | Phone, GFF, Cabin Crew fields. |
 | `0008_passphrase_ticket_links.sql` | Officer passphrases and ticket-file links. |
 
 ### Initial administrator
@@ -237,7 +237,7 @@ Profile rules:
 | Name | Self-edit | Self-edit | Self-edit | Self-edit + manage all |
 | Phone | Self-edit | Self-edit | Self-edit | Self-edit + manage all |
 | GFF | Required | Hidden | Hidden | Optional |
-| BFF | Required | Hidden | Hidden | Optional |
+| Cabin Crew | Required | Hidden | Hidden | Optional |
 | Email/role | Admin-managed | Admin-managed | Admin-managed | Admin-managed |
 
 ### `trip_requests`
@@ -338,7 +338,7 @@ Server-only service-role modules:
 
 1. Open the Booking-only navigation.
 2. Process only `ACKNOWLEDGED` requests.
-3. Read applicant name, phone, GFF, and BFF for booking.
+3. Read applicant name, phone, GFF, and Cabin Crew for booking.
 4. Enter ticket number and booking code per flight segment.
 5. Enter hotel booking reference and room type when applicable.
 6. Add at least one ticket-file URL; add more links for hotel/related files.
@@ -379,9 +379,9 @@ Additional guards:
 ### Profile fields
 
 - All roles: full name and phone number.
-- User/Admin: GFF and BFF fields are visible.
-- User: GFF and BFF are required.
-- Officer/Travel Agent: GFF and BFF are hidden.
+- User/Admin: GFF and Cabin Crew fields are visible.
+- User: GFF and Cabin Crew are required.
+- Officer/Travel Agent: GFF and Cabin Crew are hidden.
 - Email, role, and activation status are Admin-managed.
 
 ### Officer passphrase
@@ -462,7 +462,7 @@ The interface uses a dark floating-card style.
 
 - Name and phone are required.
 - Phone accepts 6–20 characters containing digits, `+`, parentheses, hyphen, or spaces.
-- User role requires both GFF and BFF values.
+- User role requires both GFF and Cabin Crew values.
 
 ### Credentials
 

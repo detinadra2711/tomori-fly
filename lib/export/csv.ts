@@ -40,7 +40,7 @@ export function tripsToCsv(trips: TripRequest[]): string {
     "Pemohon",
     "No HP",
     "Kode GFF",
-    "Kode BFF",
+    "Kode Cabin Crew",
     "Jenis",
     "Status",
     "Keperluan",
