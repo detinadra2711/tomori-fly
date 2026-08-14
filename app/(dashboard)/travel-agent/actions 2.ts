@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { isHttpUrl } from "@/lib/validation/url";
-import { notifyTripStatusChange } from "@/lib/mail/notify";
 import type { User } from "@/types";
 
 export type AgentResult = { ok: true } | { ok: false; error: string };
@@ -122,7 +121,7 @@ export async function markBooked(
   if (!saved.ok) return saved;
 
   const supabase = await createClient();
-  const { data: updated, error } = await supabase
+  const { error } = await supabase
     .from("trip_requests")
     .update({
       status: "BOOKED",
@@ -130,19 +129,8 @@ export async function markBooked(
       booked_at: new Date().toISOString(),
     })
     .eq("id", tripId)
-    .eq("status", "ACKNOWLEDGED")
-    .select("user_id, code")
-    .maybeSingle();
+    .eq("status", "ACKNOWLEDGED");
   if (error) return { ok: false, error: "Gagal menandai booking selesai." };
-
-  // Notifikasi email ke pemohon (best-effort).
-  if (updated) {
-    await notifyTripStatusChange({
-      applicantId: updated.user_id,
-      code: updated.code,
-      status: "BOOKED",
-    });
-  }
 
   revalidate(tripId);
   return { ok: true };
@@ -163,24 +151,12 @@ export async function returnRequest(
   }
 
   const supabase = await createClient();
-  const { data: updated, error } = await supabase
+  const { error } = await supabase
     .from("trip_requests")
     .update({ status: "REJECTED", rejection_note: note.trim() })
     .eq("id", tripId)
-    .eq("status", "ACKNOWLEDGED")
-    .select("user_id, code")
-    .maybeSingle();
+    .eq("status", "ACKNOWLEDGED");
   if (error) return { ok: false, error: "Gagal mengembalikan pengajuan." };
-
-  // Notifikasi email ke pemohon (best-effort).
-  if (updated) {
-    await notifyTripStatusChange({
-      applicantId: updated.user_id,
-      code: updated.code,
-      status: "REJECTED",
-      note: note.trim(),
-    });
-  }
 
   revalidate(tripId);
   return { ok: true };

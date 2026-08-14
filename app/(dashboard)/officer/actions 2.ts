@@ -7,7 +7,6 @@ import {
   setOfficerPassphrase,
   verifyOfficerPassphrase,
 } from "@/lib/officer/passphrase";
-import { notifyTripStatusChange } from "@/lib/mail/notify";
 
 export type OfficerResult = { ok: true } | { ok: false; error: string };
 
@@ -42,7 +41,7 @@ export async function acknowledgeTrip(
 
   const { data: trip } = await supabase
     .from("trip_requests")
-    .select("status, user_id, code")
+    .select("status")
     .eq("id", id)
     .maybeSingle();
 
@@ -65,13 +64,6 @@ export async function acknowledgeTrip(
     .eq("status", "PENDING");
 
   if (error) return { ok: false, error: "Gagal menandai pengajuan." };
-
-  // Notifikasi email ke pemohon (best-effort).
-  await notifyTripStatusChange({
-    applicantId: trip.user_id,
-    code: trip.code,
-    status: "ACKNOWLEDGED",
-  });
 
   revalidatePath("/officer/requests");
   revalidatePath(`/officer/requests/${id}`);

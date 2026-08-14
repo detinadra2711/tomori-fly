@@ -17,10 +17,6 @@ import type {
   UpdateAccountInput,
   AdminAction,
 } from "@/lib/admin/types";
-import {
-  notifyAccountActivation,
-  notifyPasswordResetByAdmin,
-} from "@/lib/mail/notify";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -280,9 +276,6 @@ export async function setAccountActive(
     action: isActive ? "ACTIVATE" : "DEACTIVATE",
   });
 
-  // Notifikasi email ke pemilik akun (best-effort).
-  await notifyAccountActivation(id, isActive);
-
   revalidatePath("/admin/users");
   revalidatePath(`/admin/users/${id}`);
   return { ok: true, data: undefined };
@@ -319,9 +312,6 @@ export async function resetPassword(
       user_metadata: { require_password_change: Boolean(input.requireChange) },
     });
     if (error) return fail("Gagal mengatur password baru.");
-
-    // Notifikasi email ke pemilik akun (best-effort).
-    await notifyPasswordResetByAdmin(input.id);
   } else {
     // Kirim email reset via server client biasa.
     const supabase = await createClient();

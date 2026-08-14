@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { requiresTravelCodes, showsTravelCodes } from "@/lib/profile/fields";
 import { validatePassword } from "@/lib/admin/validation";
-import { notifyPasswordChanged } from "@/lib/mail/notify";
 
 export type ProfileResult =
   | { ok: true }
@@ -79,28 +78,7 @@ export async function changeOwnPassword(
 
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password: newPassword });
-  if (error) return { ok: false, error: mapPasswordError(error.message) };
-
-  // Notifikasi email konfirmasi (best-effort).
-  await notifyPasswordChanged(user.id);
-
-  // Notifikasi email konfirmasi (best-effort).
-  await notifyPasswordChanged(user.id);
+  if (error) return { ok: false, error: "Gagal mengubah password." };
 
   return { ok: true };
-}
-
-function mapPasswordError(message?: string): string {
-  const lower = (message ?? "").toLowerCase();
-  if (lower.includes("same password") || lower.includes("different from the old"))
-    return "Password baru harus berbeda dari password lama.";
-  if (lower.includes("at least"))
-    return "Password belum memenuhi ketentuan minimum Supabase.";
-  if (lower.includes("weak") || lower.includes("easy to guess"))
-    return "Password terlalu lemah. Gunakan kombinasi yang lebih kuat.";
-  if (lower.includes("rate limit") || lower.includes("too many"))
-    return "Terlalu banyak percobaan. Coba lagi beberapa saat.";
-  if (lower.includes("reauthentication") || lower.includes("recently"))
-    return "Sesi perlu diverifikasi ulang. Logout lalu login kembali, kemudian coba lagi.";
-  return message || "Gagal mengubah password.";
 }
