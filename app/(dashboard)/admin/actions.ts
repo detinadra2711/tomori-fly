@@ -323,10 +323,25 @@ export async function resetPassword(
     // Notifikasi email ke pemilik akun (best-effort).
     await notifyPasswordResetByAdmin(input.id);
   } else {
-    // Kirim email reset via server client biasa.
+    // Kirim email reset via server client biasa. redirectTo wajib agar link
+    // di email mengarah ke halaman reset milik aplikasi.
     const supabase = await createClient();
-    const { error } = await supabase.auth.resetPasswordForEmail(row.email);
-    if (error) return fail("Gagal mengirim email reset.");
+    const { error } = await supabase.auth.resetPasswordForEmail(row.email, {
+      redirectTo: `${siteUrl()}/auth/reset-password`,
+    });
+    if (error) {
+      // error.message bisa berupa "{}" saat GoTrue membalas 5xx (auth-js
+      // men-stringify objek Response). Log detail asli agar penyebab
+      // sebenarnya — mis. SMTP menolak — tetap bisa ditelusuri dari server.
+      console.error("[resetPassword:email] gagal", {
+        email: row.email,
+        name: error.name,
+        status: (error as { status?: number }).status,
+        code: (error as { code?: string }).code,
+        message: error.message,
+      });
+      return fail(mapResetError(error));
+    }
   }
 
   await writeAudit({
@@ -351,6 +366,70 @@ function mapAuthError(message?: string): string {
   if (lower.includes("email") && lower.includes("exists"))
     return "Email sudah terdaftar.";
   return message;
+}
+
+/** Base URL aplikasi untuk link di email (redirectTo). */
+function siteUrl(): string {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "") ||
+    "http://localhost:3000"
+  );
+}
+
+/**
+ * Terjemahkan error Supabase Auth ke pesan berbahasa Indonesia.
+ *
+ * Catatan penting soal `message`: pada @supabase/auth-js, respons 5xx dari
+ * GoTrue masuk daftar NETWORK_ERROR_CODES sehingga error dilempar SEBELUM body
+ * JSON dibaca. Objek `Response` mentah lalu di-JSON.stringify dan menghasilkan
+ * string "{}" — bukan pesan asli dari server. Karena itu pemetaan di bawah
+ * bersandar pada `status`/`name` lebih dulu, baru pada teks `message`.
+ */
+function mapResetError(error?: {
+  message?: string;
+  status?: number;
+  name?: string;
+}): string {
+  const message = error?.message;
+  const status = error?.status;
+  const lower = (message ?? "").toLowerCase();
+
+  // Pesan kosong/tak informatif ("{}" dari objek Response yang di-stringify,
+  // atau "{}" literal). Tidak ada teks yang bisa dicocokkan.
+  const isOpaque =
+    !message || message.trim() === "" || message.trim() === "{}";
+
+  // 1) Rate limit. Supabase membalas 429; teksnya bervariasi
+  //    ("For security purposes, you can only request this after N seconds").
+  if (
+    status === 429 ||
+    lower.includes("rate limit") ||
+    lower.includes("too many") ||
+    lower.includes("only request this after")
+  )
+    return "Terlalu banyak permintaan reset. Tunggu beberapa saat lalu coba lagi.";
+
+  // 2) Kegagalan sisi server GoTrue — hampir selalu SMTP yang menolak kirim.
+  if (
+    (typeof status === "number" && status >= 500) ||
+    error?.name === "AuthRetryableFetchError" ||
+    lower.includes("smtp") ||
+    lower.includes("sending")
+  )
+    return "SMTP Supabase gagal mengirim email. Periksa konfigurasi SMTP di Supabase Dashboard.";
+
+  // 3) redirectTo belum masuk allow-list.
+  if (lower.includes("redirect") || lower.includes("not allowed"))
+    return "URL redirect belum diizinkan. Tambahkan di Supabase → Authentication → URL Configuration.";
+
+  // 4) Jangan pernah menampilkan "{}" ke pengguna.
+  if (isOpaque)
+    return status
+      ? `Gagal mengirim email reset (HTTP ${status}). Cek log server untuk detail.`
+      : "Gagal mengirim email reset. Cek log server untuk detail.";
+
+  return message!;
 }
 
 export { NotAuthorizedError };

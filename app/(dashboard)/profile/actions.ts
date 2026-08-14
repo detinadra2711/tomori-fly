@@ -84,9 +84,6 @@ export async function changeOwnPassword(
   // Notifikasi email konfirmasi (best-effort).
   await notifyPasswordChanged(user.id);
 
-  // Notifikasi email konfirmasi (best-effort).
-  await notifyPasswordChanged(user.id);
-
   return { ok: true };
 }
 
