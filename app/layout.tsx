@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "TravelSys — Booking Perjalanan",
+  title: "Tomori Fly — Flight & Hotel Reservation System",
   description:
     "Sistem pemesanan tiket penerbangan & reservasi hotel internal dengan alur mengetahui Officer.",
 };
