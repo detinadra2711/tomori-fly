@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { KeyRound, Loader2, Plane } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Loader2, Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
@@ -18,6 +18,8 @@ export default function ResetPasswordPage() {
   const [validSession, setValidSession] = useState(false);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -102,30 +104,44 @@ export default function ResetPasswordPage() {
               <label htmlFor="password" className="text-xs font-medium text-muted">
                 Password baru
               </label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="new-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min. 8 karakter, huruf & angka"
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Min. 8 karakter, huruf & angka"
+                  className="pr-11"
+                  required
+                />
+                <PasswordVisibilityButton
+                  visible={showPassword}
+                  onToggle={() => setShowPassword((visible) => !visible)}
+                />
+              </div>
             </div>
 
             <div className="space-y-1.5">
               <label htmlFor="confirm" className="text-xs font-medium text-muted">
                 Konfirmasi password
               </label>
-              <Input
-                id="confirm"
-                type="password"
-                autoComplete="new-password"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                placeholder="Ulangi password baru"
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="confirm"
+                  type={showConfirm ? "text" : "password"}
+                  autoComplete="new-password"
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  placeholder="Ulangi password baru"
+                  className="pr-11"
+                  required
+                />
+                <PasswordVisibilityButton
+                  visible={showConfirm}
+                  onToggle={() => setShowConfirm((visible) => !visible)}
+                />
+              </div>
             </div>
 
             {error ? (
@@ -151,5 +167,25 @@ export default function ResetPasswordPage() {
         )}
       </div>
     </main>
+  );
+}
+
+function PasswordVisibilityButton({
+  visible,
+  onToggle,
+}: {
+  visible: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={visible ? "Sembunyikan password" : "Tampilkan password"}
+      aria-pressed={visible}
+      className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted transition-colors hover:text-primary focus-visible:outline-none focus-visible:text-primary"
+    >
+      {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+    </button>
   );
 }

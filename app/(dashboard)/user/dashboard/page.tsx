@@ -1,12 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plane, Hotel, CalendarDays, FileText, X, Loader2 } from "lucide-react";
+import { Plane, Hotel, CalendarDays, FileText, X } from "lucide-react";
 import { Panel } from "@/components/cards/Panel";
 import { StatCard } from "@/components/cards/StatCard";
 import { RequestCard } from "@/components/cards/RequestCard";
 import { FloatingWidget } from "@/components/cards/FloatingWidget";
 import { StatusBadge } from "@/components/status/StatusBadge";
+import { Loader } from "@/components/ui/loader";
 import { useTrips } from "@/lib/trip-store";
 import type { TripRequest } from "@/types";
 
@@ -30,8 +31,8 @@ export default function UserDashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center gap-2 text-sm text-muted">
-        <Loader2 className="size-4 animate-spin" /> Memuat pengajuan…
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader label="Memuat pengajuan..." />
       </div>
     );
   }

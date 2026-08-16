@@ -6,6 +6,8 @@ import { KeyRound, Save, ShieldCheck } from "lucide-react";
 import { Panel } from "@/components/cards/Panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordStrength } from "@/components/ui/password-strength";
+import { PasswordVisibilityButton } from "@/components/ui/password-visibility-button";
 import { cn } from "@/lib/utils";
 import {
   changeOwnPassword,
@@ -40,6 +42,8 @@ export function ProfileForm({
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [savingPw, setSavingPw] = useState(false);
   const [pwError, setPwError] = useState<string | null>(null);
   const [pwMsg, setPwMsg] = useState<string | null>(null);
@@ -172,22 +176,37 @@ export function ProfileForm({
           <SectionTitle number="02" title="Ganti password" />
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Password baru">
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min. 8 karakter, huruf & angka"
-                autoComplete="new-password"
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Min. 8 karakter, huruf & angka"
+                  autoComplete="new-password"
+                  className="pr-11"
+                />
+                <PasswordVisibilityButton
+                  visible={showPassword}
+                  onToggle={() => setShowPassword((visible) => !visible)}
+                />
+              </div>
+              <PasswordStrength value={password} className="mt-2" />
             </Field>
             <Field label="Konfirmasi password">
-              <Input
-                type="password"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                placeholder="Ulangi password baru"
-                autoComplete="new-password"
-              />
+              <div className="relative">
+                <Input
+                  type={showConfirm ? "text" : "password"}
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  placeholder="Ulangi password baru"
+                  autoComplete="new-password"
+                  className="pr-11"
+                />
+                <PasswordVisibilityButton
+                  visible={showConfirm}
+                  onToggle={() => setShowConfirm((visible) => !visible)}
+                />
+              </div>
             </Field>
           </div>
 

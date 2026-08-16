@@ -7,6 +7,7 @@ import { ArrowLeft, CalendarDays, Download, ExternalLink, Hotel, Pencil, Plane, 
 import { Panel } from "@/components/cards/Panel";
 import { StatusBadge } from "@/components/status/StatusBadge";
 import { Button } from "@/components/ui/button";
+import { Loader } from "@/components/ui/loader";
 import { cancelTrip, submitTrip, useTrips } from "@/lib/trip-store";
 import type { BedType, TripStatus } from "@/types";
 import { formatDate, formatDateLong } from "@/lib/format";
@@ -20,7 +21,7 @@ export default function RequestDetailPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   if (loading) {
-    return <Panel className="p-10 text-center"><p className="text-sm text-muted">Memuat pengajuan…</p></Panel>;
+    return <Panel className="flex min-h-[40vh] items-center justify-center p-10"><Loader label="Memuat pengajuan..." /></Panel>;
   }
 
   if (!trip) {

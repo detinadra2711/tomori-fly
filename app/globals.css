@@ -52,6 +52,110 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.loader {
+  display: flex;
+  min-width: 11rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  color: var(--text-muted);
+}
+
+.loader-boxes {
+  --loader-size: 24px;
+  --loader-duration: 1.2s;
+  position: relative;
+  width: calc(var(--loader-size) * 3);
+  height: calc(var(--loader-size) * 2);
+  transform: rotateX(60deg) rotateZ(45deg);
+  transform-style: preserve-3d;
+}
+
+.loader-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--loader-size);
+  height: var(--loader-size);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.loader-box-1 {
+  animation: loader-box-1 var(--loader-duration) ease-in-out infinite;
+}
+
+.loader-box-2 {
+  animation: loader-box-2 var(--loader-duration) ease-in-out infinite;
+}
+
+.loader-box-3 {
+  animation: loader-box-3 var(--loader-duration) ease-in-out infinite;
+}
+
+.loader-box-4 {
+  animation: loader-box-4 var(--loader-duration) ease-in-out infinite;
+}
+
+.loader-face {
+  position: absolute;
+  inset: 0;
+  background: var(--accent-blue);
+  backface-visibility: hidden;
+}
+
+.loader-face-front {
+  transform: translateZ(calc(var(--loader-size) / 2));
+}
+
+.loader-face-right {
+  background: #2563eb;
+  transform: rotateY(90deg) translateZ(calc(var(--loader-size) / 2));
+}
+
+.loader-face-top {
+  background: #60a5fa;
+  transform: rotateX(90deg) translateZ(calc(var(--loader-size) / 2));
+}
+
+.loader-face-back {
+  background: #1d4ed8;
+  transform: rotateY(180deg) translateZ(calc(var(--loader-size) / 2));
+}
+
+.loader-label {
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+}
+
+@keyframes loader-box-1 {
+  0%, 50% { transform: translate3d(100%, 0, 0); }
+  100% { transform: translate3d(200%, 0, 0); }
+}
+
+@keyframes loader-box-2 {
+  0% { transform: translate3d(0, 100%, 0); }
+  50% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(100%, 0, 0); }
+}
+
+@keyframes loader-box-3 {
+  0%, 50% { transform: translate3d(100%, 100%, 0); }
+  100% { transform: translate3d(0, 100%, 0); }
+}
+
+@keyframes loader-box-4 {
+  0% { transform: translate3d(200%, 0, 0); }
+  50% { transform: translate3d(200%, 100%, 0); }
+  100% { transform: translate3d(100%, 100%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-box {
+    animation-duration: 4s;
+  }
+}
+
 /* Depth via soft shadows, never hard borders. */
 .shadow-panel {
   box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.55);

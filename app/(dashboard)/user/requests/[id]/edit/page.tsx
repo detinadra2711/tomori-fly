@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Panel } from "@/components/cards/Panel";
 import { TripEditor } from "@/components/forms/TripEditor";
+import { Loader } from "@/components/ui/loader";
 import { useTrips } from "@/lib/trip-store";
 
 export default function EditRequestPage() {
@@ -13,8 +14,8 @@ export default function EditRequestPage() {
 
   if (loading) {
     return (
-      <Panel className="p-10 text-center">
-        <p className="text-sm text-muted">Memuat pengajuan…</p>
+      <Panel className="flex min-h-[40vh] items-center justify-center p-10">
+        <Loader label="Memuat pengajuan..." />
       </Panel>
     );
   }

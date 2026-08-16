@@ -6,6 +6,8 @@ import Link from "next/link";
 import { KeyRound, Pencil, Power, PowerOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordStrength } from "@/components/ui/password-strength";
+import { PasswordVisibilityButton } from "@/components/ui/password-visibility-button";
 import {
   resetPassword,
   setAccountActive,
@@ -26,6 +28,7 @@ export function AccountActions({
 
   const [showReset, setShowReset] = useState(false);
   const [tempPassword, setTempPassword] = useState("");
+  const [showTempPassword, setShowTempPassword] = useState(false);
   const [requireChange, setRequireChange] = useState(true);
 
   async function toggleActive() {
@@ -132,12 +135,20 @@ export function AccountActions({
           </Button>
           {showReset ? (
             <div className="space-y-2 rounded-2xl bg-black/20 p-3">
-              <Input
-                type="text"
-                value={tempPassword}
-                onChange={(e) => setTempPassword(e.target.value)}
-                placeholder="Min. 8 karakter, huruf & angka"
-              />
+              <div className="relative">
+                <Input
+                  type={showTempPassword ? "text" : "password"}
+                  value={tempPassword}
+                  onChange={(e) => setTempPassword(e.target.value)}
+                  placeholder="Min. 8 karakter, huruf & angka"
+                  className="pr-11"
+                />
+                <PasswordVisibilityButton
+                  visible={showTempPassword}
+                  onToggle={() => setShowTempPassword((visible) => !visible)}
+                />
+              </div>
+              <PasswordStrength value={tempPassword} />
               <label className="flex cursor-pointer items-center gap-2 text-xs text-muted">
                 <input
                   type="checkbox"

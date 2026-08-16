@@ -7,6 +7,8 @@ import { ArrowLeft } from "lucide-react";
 import { Panel } from "@/components/cards/Panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordStrength } from "@/components/ui/password-strength";
+import { PasswordVisibilityButton } from "@/components/ui/password-visibility-button";
 import { cn } from "@/lib/utils";
 import { createAccount, updateAccount } from "@/app/(dashboard)/admin/actions";
 import { ALL_ROLES, ROLE_LABELS, type AdminAccount } from "@/lib/admin/types";
@@ -22,6 +24,7 @@ export function AccountForm({ account }: { account?: AdminAccount }) {
   const [role, setRole] = useState<Role>(account?.role ?? "user");
   const [mode, setMode] = useState<"password" | "invite">("password");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [requireChange, setRequireChange] = useState(true);
 
   const [error, setError] = useState<string | null>(null);
@@ -150,12 +153,20 @@ export function AccountForm({ account }: { account?: AdminAccount }) {
             {mode === "password" ? (
               <div className="mt-3 space-y-3">
                 <Field label="Password awal" invalid={errorField === "password"}>
-                  <Input
-                    type="text"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Min. 8 karakter, huruf & angka"
-                  />
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Min. 8 karakter, huruf & angka"
+                      className="pr-11"
+                    />
+                    <PasswordVisibilityButton
+                      visible={showPassword}
+                      onToggle={() => setShowPassword((visible) => !visible)}
+                    />
+                  </div>
+                  <PasswordStrength value={password} className="mt-2" />
                 </Field>
                 <label className="flex cursor-pointer items-center gap-2 text-xs text-muted">
                   <input
